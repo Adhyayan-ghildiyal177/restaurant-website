@@ -5,971 +5,647 @@ from datetime import datetime
 st.set_page_config(
     page_title="DeltaX Food | Order Online",
     page_icon="🍽️",
-    layout="wide",
-    initial_sidebar_state="collapsed",
+    layout="wide"
 )
 
-# ---------------------------------------------------------
-# Real food image URLs
-# ---------------------------------------------------------
-IMG = {
+# -------------------------------------------------
+# Real food-style image URLs
+# -------------------------------------------------
+FOOD_IMAGES = {
     "biryani": "https://images.unsplash.com/photo-1563379091339-03246963d7d4?auto=format&fit=crop&w=900&q=80",
     "pizza": "https://images.unsplash.com/photo-1513104890138-7c749659a591?auto=format&fit=crop&w=900&q=80",
     "burger": "https://images.unsplash.com/photo-1568901346375-23c9450c58cd?auto=format&fit=crop&w=900&q=80",
     "dosa": "https://images.unsplash.com/photo-1668236543090-82eba5ee5976?auto=format&fit=crop&w=900&q=80",
     "chinese": "https://images.unsplash.com/photo-1612929633738-8fe44f7ec841?auto=format&fit=crop&w=900&q=80",
-    "dessert": "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=900&q=80",
+    "dessert": "https://images.unsplash.com/photo-1551024506-0bccd828d307?auto=format&fit=crop&w=900&q=80",
     "rolls": "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?auto=format&fit=crop&w=900&q=80",
     "thali": "https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=900&q=80",
     "momos": "https://images.unsplash.com/photo-1625398407796-82650a8c135f?auto=format&fit=crop&w=900&q=80",
     "cake": "https://images.unsplash.com/photo-1578985545062-69928b1d9587?auto=format&fit=crop&w=900&q=80",
-    "paratha": "https://images.unsplash.com/photo-1631452180539-96aca7d48617?auto=format&fit=crop&w=900&q=80",
-    "coffee": "https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=900&q=80",
-    "noodles": "https://images.unsplash.com/photo-1612929633738-8fe44f7ec841?auto=format&fit=crop&w=900&q=80",
-    "icecream": "https://images.unsplash.com/photo-1563805042-7684c019e1cb?auto=format&fit=crop&w=900&q=80",
-    "sandwich": "https://images.unsplash.com/photo-1528735602780-2552fd46c7af?auto=format&fit=crop&w=900&q=80",
-    "juice": "https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?auto=format&fit=crop&w=900&q=80",
 }
 
-CATEGORIES = [
-    ("Biryani", IMG["biryani"]),
-    ("Pizza", IMG["pizza"]),
-    ("Burger", IMG["burger"]),
-    ("Dosa", IMG["dosa"]),
-    ("Chinese", IMG["chinese"]),
-    ("Momos", IMG["momos"]),
-    ("Desserts", IMG["dessert"]),
-    ("Thali", IMG["thali"]),
+categories = [
+    {"name": "Biryani", "image": FOOD_IMAGES["biryani"]},
+    {"name": "Pizza", "image": FOOD_IMAGES["pizza"]},
+    {"name": "Burger", "image": FOOD_IMAGES["burger"]},
+    {"name": "Dosa", "image": FOOD_IMAGES["dosa"]},
+    {"name": "Chinese", "image": FOOD_IMAGES["chinese"]},
+    {"name": "Desserts", "image": FOOD_IMAGES["dessert"]},
+    {"name": "Rolls", "image": FOOD_IMAGES["rolls"]},
+    {"name": "Thali", "image": FOOD_IMAGES["thali"]},
 ]
 
-COUPONS = {
-    "DELTAX50": {"kind": "percent", "value": 50, "cap": 100, "label": "50% OFF up to ₹100"},
-    "FREEDEL": {"kind": "delivery", "value": 29, "cap": 29, "label": "Free delivery"},
-    "NEWUSER": {"kind": "flat", "value": 75, "cap": 75, "label": "Flat ₹75 OFF"},
-    "TASTY20": {"kind": "percent", "value": 20, "cap": 80, "label": "20% OFF up to ₹80"},
-}
-
-RESTAURANTS = [
+restaurants = [
     {
-        "id": "r1",
+        "id": 1,
         "name": "DeltaX Biryani House",
         "cuisine": "Biryani, North Indian",
         "rating": 4.6,
-        "rating_count": "1.2K+",
-        "eta_min": 25,
-        "eta_max": 30,
-        "distance": 2.1,
-        "price_for_two": 350,
+        "time": "25-30 min",
         "offer": "50% OFF up to ₹100",
+        "veg": False,
+        "price_for_two": 350,
+        "distance": "2.1 km",
+        "image": FOOD_IMAGES["biryani"],
         "promoted": True,
-        "pure_veg": False,
-        "image": IMG["biryani"],
         "menu": {
             "Recommended": [
-                {"id": "i101", "name": "Chicken Dum Biryani", "price": 199, "veg": False, "image": IMG["biryani"], "bestseller": True, "rating": 4.5, "desc": "Aromatic rice cooked with tender chicken and spices."},
-                {"id": "i102", "name": "Veg Hyderabadi Biryani", "price": 159, "veg": True, "image": IMG["biryani"], "bestseller": True, "rating": 4.4, "desc": "Loaded with vegetables, herbs, and classic biryani masala."},
+                {"name": "Chicken Biryani", "price": 199, "veg": False, "image": FOOD_IMAGES["biryani"], "bestseller": True},
+                {"name": "Veg Biryani", "price": 149, "veg": True, "image": FOOD_IMAGES["biryani"], "bestseller": False},
             ],
             "Starters": [
-                {"id": "i103", "name": "Paneer Tikka", "price": 179, "veg": True, "image": IMG["thali"], "bestseller": False, "rating": 4.2, "desc": "Soft paneer cubes grilled with spicy marinade."},
-                {"id": "i104", "name": "Boondi Raita", "price": 49, "veg": True, "image": IMG["dessert"], "bestseller": False, "rating": 4.1, "desc": "Cool curd with boondi and mild spices."},
+                {"name": "Paneer Tikka", "price": 179, "veg": True, "image": FOOD_IMAGES["thali"], "bestseller": True},
+                {"name": "Raita", "price": 39, "veg": True, "image": FOOD_IMAGES["dessert"], "bestseller": False},
             ],
         },
     },
     {
-        "id": "r2",
+        "id": 2,
         "name": "Pizza Planet DX",
-        "cuisine": "Pizza, Italian, Fast Food",
+        "cuisine": "Pizza, Fast Food",
         "rating": 4.4,
-        "rating_count": "900+",
-        "eta_min": 20,
-        "eta_max": 25,
-        "distance": 1.6,
-        "price_for_two": 450,
+        "time": "20-25 min",
         "offer": "Buy 1 Get 1",
+        "veg": True,
+        "price_for_two": 450,
+        "distance": "1.6 km",
+        "image": FOOD_IMAGES["pizza"],
         "promoted": False,
-        "pure_veg": True,
-        "image": IMG["pizza"],
         "menu": {
             "Recommended": [
-                {"id": "i201", "name": "Margherita Pizza", "price": 199, "veg": True, "image": IMG["pizza"], "bestseller": True, "rating": 4.5, "desc": "Classic cheese pizza with fresh tomato sauce."},
-                {"id": "i202", "name": "Farmhouse Pizza", "price": 279, "veg": True, "image": IMG["pizza"], "bestseller": True, "rating": 4.3, "desc": "Capsicum, onion, tomato, corn and extra cheese."},
+                {"name": "Margherita Pizza", "price": 199, "veg": True, "image": FOOD_IMAGES["pizza"], "bestseller": True},
+                {"name": "Farmhouse Pizza", "price": 279, "veg": True, "image": FOOD_IMAGES["pizza"], "bestseller": False},
             ],
             "Sides": [
-                {"id": "i203", "name": "Garlic Bread", "price": 119, "veg": True, "image": IMG["sandwich"], "bestseller": False, "rating": 4.2, "desc": "Buttery garlic bread baked golden."},
-                {"id": "i204", "name": "Cold Coffee", "price": 99, "veg": True, "image": IMG["coffee"], "bestseller": False, "rating": 4.1, "desc": "Chilled coffee with creamy foam."},
+                {"name": "Garlic Bread", "price": 119, "veg": True, "image": FOOD_IMAGES["pizza"], "bestseller": True},
+                {"name": "Cold Drink", "price": 59, "veg": True, "image": FOOD_IMAGES["dessert"], "bestseller": False},
             ],
         },
     },
     {
-        "id": "r3",
+        "id": 3,
         "name": "Burger Junction",
-        "cuisine": "Burgers, Snacks, Beverages",
+        "cuisine": "Burger, Snacks",
         "rating": 4.2,
-        "rating_count": "700+",
-        "eta_min": 18,
-        "eta_max": 22,
-        "distance": 0.9,
-        "price_for_two": 250,
+        "time": "18-22 min",
         "offer": "₹75 OFF",
+        "veg": False,
+        "price_for_two": 250,
+        "distance": "0.9 km",
+        "image": FOOD_IMAGES["burger"],
         "promoted": True,
-        "pure_veg": False,
-        "image": IMG["burger"],
         "menu": {
             "Recommended": [
-                {"id": "i301", "name": "Veg Cheese Burger", "price": 99, "veg": True, "image": IMG["burger"], "bestseller": True, "rating": 4.4, "desc": "Crispy veg patty with cheese and sauces."},
-                {"id": "i302", "name": "Chicken Burger", "price": 139, "veg": False, "image": IMG["burger"], "bestseller": True, "rating": 4.3, "desc": "Juicy chicken patty with fresh lettuce and cheese."},
+                {"name": "Veg Cheese Burger", "price": 99, "veg": True, "image": FOOD_IMAGES["burger"], "bestseller": True},
+                {"name": "Chicken Burger", "price": 139, "veg": False, "image": FOOD_IMAGES["burger"], "bestseller": True},
             ],
             "Add-ons": [
-                {"id": "i303", "name": "Peri Peri Fries", "price": 89, "veg": True, "image": IMG["burger"], "bestseller": False, "rating": 4.0, "desc": "Crispy fries tossed with peri peri spice."},
-                {"id": "i304", "name": "Chocolate Shake", "price": 129, "veg": True, "image": IMG["dessert"], "bestseller": False, "rating": 4.1, "desc": "Thick chocolate shake with creamy finish."},
+                {"name": "French Fries", "price": 89, "veg": True, "image": FOOD_IMAGES["burger"], "bestseller": False},
+                {"name": "Chocolate Shake", "price": 129, "veg": True, "image": FOOD_IMAGES["dessert"], "bestseller": False},
             ],
         },
     },
     {
-        "id": "r4",
+        "id": 4,
         "name": "South Express",
         "cuisine": "South Indian, Breakfast",
         "rating": 4.7,
-        "rating_count": "2K+",
-        "eta_min": 15,
-        "eta_max": 20,
-        "distance": 1.2,
-        "price_for_two": 220,
+        "time": "15-20 min",
         "offer": "Free delivery",
+        "veg": True,
+        "price_for_two": 220,
+        "distance": "1.2 km",
+        "image": FOOD_IMAGES["dosa"],
         "promoted": False,
-        "pure_veg": True,
-        "image": IMG["dosa"],
         "menu": {
             "Recommended": [
-                {"id": "i401", "name": "Masala Dosa", "price": 109, "veg": True, "image": IMG["dosa"], "bestseller": True, "rating": 4.7, "desc": "Crispy dosa filled with spicy potato masala."},
-                {"id": "i402", "name": "Idli Sambar", "price": 79, "veg": True, "image": IMG["dosa"], "bestseller": False, "rating": 4.4, "desc": "Soft idlis served with hot sambar and chutney."},
+                {"name": "Masala Dosa", "price": 109, "veg": True, "image": FOOD_IMAGES["dosa"], "bestseller": True},
+                {"name": "Idli Sambar", "price": 79, "veg": True, "image": FOOD_IMAGES["dosa"], "bestseller": False},
             ],
-            "Breakfast Combos": [
-                {"id": "i403", "name": "Vada Sambar", "price": 89, "veg": True, "image": IMG["dosa"], "bestseller": False, "rating": 4.2, "desc": "Crispy vada served with sambar."},
-                {"id": "i404", "name": "Filter Coffee", "price": 49, "veg": True, "image": IMG["coffee"], "bestseller": True, "rating": 4.5, "desc": "Authentic South Indian filter coffee."},
+            "Breakfast": [
+                {"name": "Vada Sambar", "price": 89, "veg": True, "image": FOOD_IMAGES["dosa"], "bestseller": False},
+                {"name": "Filter Coffee", "price": 49, "veg": True, "image": FOOD_IMAGES["dessert"], "bestseller": True},
             ],
         },
     },
     {
-        "id": "r5",
+        "id": 5,
         "name": "Chinese Wok DX",
-        "cuisine": "Chinese, Momos, Noodles",
+        "cuisine": "Chinese, Momos",
         "rating": 4.1,
-        "rating_count": "600+",
-        "eta_min": 30,
-        "eta_max": 35,
-        "distance": 3.3,
-        "price_for_two": 300,
+        "time": "30-35 min",
         "offer": "20% OFF",
+        "veg": False,
+        "price_for_two": 300,
+        "distance": "3.3 km",
+        "image": FOOD_IMAGES["chinese"],
         "promoted": False,
-        "pure_veg": False,
-        "image": IMG["chinese"],
         "menu": {
             "Recommended": [
-                {"id": "i501", "name": "Veg Hakka Noodles", "price": 139, "veg": True, "image": IMG["noodles"], "bestseller": True, "rating": 4.3, "desc": "Wok-tossed noodles with crunchy vegetables."},
-                {"id": "i502", "name": "Chicken Fried Rice", "price": 169, "veg": False, "image": IMG["chinese"], "bestseller": False, "rating": 4.1, "desc": "Fried rice with chicken and Asian sauces."},
+                {"name": "Veg Hakka Noodles", "price": 139, "veg": True, "image": FOOD_IMAGES["chinese"], "bestseller": True},
+                {"name": "Chicken Fried Rice", "price": 169, "veg": False, "image": FOOD_IMAGES["chinese"], "bestseller": False},
             ],
-            "Momos": [
-                {"id": "i503", "name": "Veg Momos", "price": 99, "veg": True, "image": IMG["momos"], "bestseller": True, "rating": 4.2, "desc": "Steamed veg momos with spicy chutney."},
-                {"id": "i504", "name": "Chilli Chicken", "price": 199, "veg": False, "image": IMG["chinese"], "bestseller": False, "rating": 4.0, "desc": "Spicy Indo-Chinese chicken starter."},
+            "Snacks": [
+                {"name": "Veg Momos", "price": 99, "veg": True, "image": FOOD_IMAGES["momos"], "bestseller": True},
+                {"name": "Chilli Chicken", "price": 199, "veg": False, "image": FOOD_IMAGES["chinese"], "bestseller": False},
             ],
         },
     },
     {
-        "id": "r6",
+        "id": 6,
         "name": "Sweet Treats",
-        "cuisine": "Desserts, Cakes, Ice Cream",
+        "cuisine": "Desserts, Ice Cream",
         "rating": 4.5,
-        "rating_count": "850+",
-        "eta_min": 20,
-        "eta_max": 30,
-        "distance": 2.8,
-        "price_for_two": 280,
+        "time": "20-30 min",
         "offer": "Flat ₹50 OFF",
+        "veg": True,
+        "price_for_two": 280,
+        "distance": "2.8 km",
+        "image": FOOD_IMAGES["cake"],
         "promoted": True,
-        "pure_veg": True,
-        "image": IMG["cake"],
         "menu": {
             "Recommended": [
-                {"id": "i601", "name": "Chocolate Cake", "price": 149, "veg": True, "image": IMG["cake"], "bestseller": True, "rating": 4.6, "desc": "Rich chocolate pastry with creamy layers."},
-                {"id": "i602", "name": "Gulab Jamun", "price": 99, "veg": True, "image": IMG["dessert"], "bestseller": False, "rating": 4.3, "desc": "Soft gulab jamun served warm."},
+                {"name": "Chocolate Cake", "price": 149, "veg": True, "image": FOOD_IMAGES["cake"], "bestseller": True},
+                {"name": "Gulab Jamun", "price": 99, "veg": True, "image": FOOD_IMAGES["dessert"], "bestseller": False},
             ],
             "Ice Cream": [
-                {"id": "i603", "name": "Vanilla Ice Cream", "price": 89, "veg": True, "image": IMG["icecream"], "bestseller": False, "rating": 4.1, "desc": "Creamy vanilla scoop."},
-                {"id": "i604", "name": "Brownie Sundae", "price": 129, "veg": True, "image": IMG["dessert"], "bestseller": True, "rating": 4.5, "desc": "Brownie with ice cream and chocolate sauce."},
+                {"name": "Vanilla Ice Cream", "price": 89, "veg": True, "image": FOOD_IMAGES["dessert"], "bestseller": False},
+                {"name": "Brownie", "price": 129, "veg": True, "image": FOOD_IMAGES["cake"], "bestseller": True},
             ],
         },
     },
 ]
 
-# ---------------------------------------------------------
-# Session state
-# ---------------------------------------------------------
-defaults = {
-    "cart": {},
-    "selected_restaurant": None,
-    "category_filter": "",
-    "coupon_code": "",
-    "applied_coupon": "",
-    "order_placed": False,
-    "last_order_id": "",
+COUPONS = {
+    "DELTAX50": {"type": "percent", "value": 50, "max": 100, "label": "50% OFF up to ₹100"},
+    "FREEDEL": {"type": "delivery", "value": 29, "label": "Free delivery"},
+    "NEWUSER": {"type": "flat", "value": 75, "label": "Flat ₹75 OFF"},
 }
-for key, value in defaults.items():
-    if key not in st.session_state:
-        st.session_state[key] = value
 
-# ---------------------------------------------------------
-# Styling
-# ---------------------------------------------------------
-st.markdown(
-    """
+# -------------------------------------------------
+# State
+# -------------------------------------------------
+if "cart" not in st.session_state:
+    st.session_state.cart = []
+if "selected_restaurant" not in st.session_state:
+    st.session_state.selected_restaurant = None
+if "selected_category" not in st.session_state:
+    st.session_state.selected_category = None
+if "coupon" not in st.session_state:
+    st.session_state.coupon = ""
+if "order_placed" not in st.session_state:
+    st.session_state.order_placed = False
+if "active_tab" not in st.session_state:
+    st.session_state.active_tab = "home"
+
+# -------------------------------------------------
+# CSS
+# -------------------------------------------------
+st.markdown("""
 <style>
-:root {
-    --brand: #fc8019;
-    --brand-dark: #e46d12;
-    --green: #1ba672;
-    --text: #111827;
-    --muted: #6b7280;
-    --bg: #fff7ed;
-    --card: #ffffff;
-    --border: #eee2d5;
-}
-html, body, [class*="css"] {
-    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-}
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&display=swap');
+
+* { font-family: 'Inter', sans-serif; }
+
 .stApp {
     background:
-      radial-gradient(circle at 8% 0%, rgba(252,128,25,.18), transparent 28%),
-      radial-gradient(circle at 90% 6%, rgba(255,188,87,.22), transparent 26%),
-      linear-gradient(180deg, #fff7ed 0%, #fffaf4 30%, #ffffff 100%);
-    color: var(--text);
+        radial-gradient(circle at top left, rgba(255, 122, 0, 0.30), transparent 32%),
+        radial-gradient(circle at top right, rgba(255, 0, 128, 0.22), transparent 34%),
+        radial-gradient(circle at center right, rgba(59, 130, 246, 0.18), transparent 36%),
+        linear-gradient(135deg, #120806 0%, #241031 42%, #08111f 100%);
+    color: #ffffff;
 }
+
 [data-testid="stHeader"] { background: transparent; }
-.block-container {
-    padding-top: 1rem;
-    max-width: 1240px;
+.block-container { padding-top: 1.2rem; padding-bottom: 2rem; }
+
+.top-nav {
+    display:flex; justify-content:space-between; align-items:center;
+    padding:18px 24px; border-radius:26px;
+    background:rgba(255,255,255,.09);
+    border:1px solid rgba(255,255,255,.15);
+    box-shadow:0 18px 45px rgba(0,0,0,.28);
+    backdrop-filter: blur(18px);
+    margin-bottom:20px;
 }
-.dx-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: rgba(255,255,255,.94);
-    border: 1px solid #f1e4d8;
-    border-radius: 22px;
-    padding: 14px 20px;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    box-shadow: 0 12px 30px rgba(17,24,39,.08);
-    backdrop-filter: blur(14px);
+.brand {
+    font-size:32px; font-weight:900; letter-spacing:-1px;
 }
-.dx-logo {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 26px;
-    font-weight: 900;
-    letter-spacing: -.8px;
-}
-.dx-logo-badge {
-    width: 42px;
-    height: 42px;
-    border-radius: 14px;
-    background: linear-gradient(135deg, #fc8019, #ffb347);
-    display: grid;
-    place-items: center;
-    color: white;
-    font-size: 24px;
-    box-shadow: 0 10px 24px rgba(252,128,25,.28);
-}
-.dx-logo span { color: var(--brand); }
-.dx-nav {
-    color: #374151;
-    font-weight: 800;
-}
-.dx-nav-item {
-    display: inline-block;
-    margin-left: 18px;
+.brand span { color:#ff7a00; }
+.nav-actions { display:flex; gap:12px; align-items:center; }
+.nav-pill {
+    background:linear-gradient(90deg, #ff7a00, #ff3d00);
+    color:white; padding:10px 16px; border-radius:999px;
+    font-weight:900; box-shadow:0 8px 24px rgba(255,122,0,.35);
 }
 .hero {
-    margin: 22px 0 26px;
-    border-radius: 32px;
-    overflow: hidden;
-    background: linear-gradient(135deg, #fc8019 0%, #ff9f37 46%, #ffcf86 100%);
-    color: white;
-    padding: 40px;
-    position: relative;
-    box-shadow: 0 22px 55px rgba(252,128,25,.26);
+    background:
+      linear-gradient(135deg, rgba(255,122,0,.98), rgba(255,61,0,.96), rgba(139,92,246,.92));
+    border-radius:36px; padding:42px; color:white; margin-bottom:22px;
+    border:1px solid rgba(255,255,255,.26);
+    box-shadow:0 28px 75px rgba(255,90,31,.32);
+    position:relative; overflow:hidden;
 }
-.hero::after {
-    content: "";
-    position: absolute;
-    right: -80px;
-    top: -120px;
-    width: 360px;
-    height: 360px;
-    border-radius: 50%;
-    background: rgba(255,255,255,.18);
+.hero:after {
+    content:""; position:absolute; right:-90px; top:-100px; width:370px; height:370px;
+    border-radius:50%; background:rgba(255,255,255,.13);
 }
-.hero-title {
-    font-size: 56px;
-    line-height: 1.02;
-    letter-spacing: -2px;
-    font-weight: 900;
-    margin: 0;
+.hero h1 { font-size:62px; line-height:1.02; margin:0; font-weight:900; letter-spacing:-2px; }
+.hero p { font-size:21px; opacity:.96; max-width:760px; margin-top:15px; }
+.hero-badges { display:flex; flex-wrap:wrap; gap:10px; margin-top:24px; }
+.hero-badge {
+    background:rgba(0,0,0,.25); border:1px solid rgba(255,255,255,.24);
+    padding:10px 15px; border-radius:999px; font-weight:900;
 }
-.hero-subtitle {
-    font-size: 19px;
-    max-width: 670px;
-    margin-top: 12px;
-    opacity: .96;
+.search-zone {
+    background:rgba(255,255,255,.10);
+    border:1px solid rgba(255,255,255,.16);
+    border-radius:30px; padding:22px; margin-bottom:20px;
+    box-shadow:0 18px 45px rgba(0,0,0,.22);
+    backdrop-filter:blur(18px);
 }
-.hero-chip {
-    display: inline-block;
-    background: rgba(0,0,0,.18);
-    border: 1px solid rgba(255,255,255,.28);
-    padding: 9px 14px;
-    border-radius: 999px;
-    font-weight: 900;
-    margin-bottom: 12px;
+.section-title {
+    font-size:28px; font-weight:900; color:#fff; margin:14px 0 16px 0;
 }
-.search-panel {
-    background: white;
-    border: 1px solid #f1e4d8;
-    border-radius: 26px;
-    padding: 20px;
-    box-shadow: 0 18px 40px rgba(17,24,39,.07);
-    margin-bottom: 20px;
-}
-.section-heading {
-    font-size: 28px;
-    font-weight: 900;
-    margin: 24px 0 14px;
-    letter-spacing: -.7px;
-}
-.category-tile {
-    background: white;
-    border: 1px solid #f1e4d8;
-    border-radius: 22px;
-    padding: 10px;
-    box-shadow: 0 12px 28px rgba(17,24,39,.06);
-    text-align: center;
-    transition: transform .15s ease, box-shadow .15s ease;
-}
-.category-tile:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 18px 36px rgba(252,128,25,.14);
+.category-card {
+    background:rgba(255,255,255,.10);
+    border:1px solid rgba(255,255,255,.15);
+    border-radius:24px; padding:12px; text-align:center;
+    box-shadow:0 14px 34px rgba(0,0,0,.22);
 }
 .category-img {
-    height: 96px;
-    border-radius: 18px;
-    background-size: cover;
-    background-position: center;
+    height:92px; border-radius:18px; background-size:cover; background-position:center;
+    border:1px solid rgba(255,255,255,.14);
 }
-.category-name {
-    font-weight: 900;
-    margin-top: 9px;
+.category-name { font-weight:900; margin-top:10px; color:white; }
+.offer-strip {
+    background:linear-gradient(90deg, rgba(34,197,94,.95), rgba(16,185,129,.95), rgba(59,130,246,.85));
+    border-radius:24px; padding:18px 22px; margin:18px 0 24px 0;
+    font-weight:900; color:white; box-shadow:0 16px 40px rgba(16,185,129,.22);
 }
-.offer-row {
-    background: #fff;
-    border: 1px dashed #fc8019;
-    color: #9a4b08;
-    border-radius: 20px;
-    padding: 16px 18px;
-    font-weight: 900;
-    margin: 18px 0 8px;
+.card {
+    background:rgba(255,255,255,.10);
+    border:1px solid rgba(255,255,255,.17);
+    border-radius:28px; padding:0; overflow:hidden;
+    box-shadow:0 18px 42px rgba(0,0,0,.25);
+    margin-bottom:18px; backdrop-filter:blur(18px);
+    transition: transform .15s ease, border .15s ease;
 }
-.restaurant-card {
-    background: white;
-    border: 1px solid #f1e4d8;
-    border-radius: 26px;
-    overflow: hidden;
-    box-shadow: 0 16px 34px rgba(17,24,39,.07);
-    margin-bottom: 18px;
-    transition: transform .15s ease, box-shadow .15s ease;
-}
-.restaurant-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 22px 44px rgba(252,128,25,.16);
-}
-.rest-img {
-    height: 180px;
-    background-size: cover;
-    background-position: center;
-    position: relative;
-}
-.rest-offer {
-    position: absolute;
-    left: 12px;
-    bottom: 12px;
-    background: linear-gradient(90deg, #111827, #374151);
-    color: #fff;
-    border-radius: 999px;
-    padding: 8px 12px;
-    font-size: 13px;
-    font-weight: 900;
-}
+.card:hover { transform:translateY(-4px); border-color:rgba(255,122,0,.72); }
+.rest-img { height:180px; background-size:cover; background-position:center; position:relative; }
 .promoted {
-    position: absolute;
-    left: 12px;
-    top: 12px;
-    background: rgba(255,255,255,.92);
-    color: #111827;
-    border-radius: 999px;
-    padding: 7px 11px;
-    font-size: 12px;
-    font-weight: 900;
+    position:absolute; top:12px; left:12px; background:rgba(0,0,0,.72);
+    color:white; font-size:12px; font-weight:900; padding:6px 10px; border-radius:999px;
 }
-.rest-body {
-    padding: 16px;
+.discount {
+    position:absolute; bottom:12px; left:12px; background:linear-gradient(90deg,#22c55e,#16a34a);
+    color:white; padding:7px 12px; border-radius:999px; font-weight:900; font-size:13px;
 }
-.rest-title {
-    font-size: 21px;
-    font-weight: 900;
-    margin-bottom: 4px;
+.rest-body { padding:18px; }
+.restaurant-title { font-size:22px; font-weight:900; color:#fff; }
+.meta { color:#d1d5db; font-size:14px; margin-top:5px; }
+.rating { color:#22c55e; font-weight:900; }
+.menu-box {
+    background:rgba(255,255,255,.10);
+    border:1px solid rgba(255,255,255,.16);
+    border-radius:30px; padding:24px; margin-top:20px;
+    box-shadow:0 18px 44px rgba(0,0,0,.24);
 }
-.rest-meta {
-    color: #6b7280;
-    font-size: 14px;
-    line-height: 1.5;
+.menu-card {
+    background:rgba(255,255,255,.08);
+    border:1px solid rgba(255,255,255,.14);
+    border-radius:24px; padding:14px; margin-bottom:14px;
 }
-.rating-pill {
-    display: inline-block;
-    color: white;
-    background: #1ba672;
-    border-radius: 999px;
-    padding: 3px 8px;
-    font-size: 13px;
-    font-weight: 900;
+.menu-img {
+    height:95px; border-radius:18px; background-size:cover; background-position:center;
 }
-.menu-panel {
-    background: #fff;
-    border: 1px solid #f1e4d8;
-    border-radius: 28px;
-    padding: 22px;
-    box-shadow: 0 18px 40px rgba(17,24,39,.07);
-    margin: 22px 0;
-}
-.menu-top {
-    background: #fff7ed;
-    border: 1px solid #f4d4b8;
-    border-radius: 22px;
-    padding: 18px;
-    margin-bottom: 18px;
-}
-.menu-category {
-    font-size: 22px;
-    font-weight: 900;
-    margin: 22px 0 12px;
-}
-.item-card {
-    background: #fff;
-    border: 1px solid #f1e4d8;
-    border-radius: 22px;
-    padding: 14px;
-    margin-bottom: 14px;
-}
-.item-img {
-    height: 110px;
-    border-radius: 18px;
-    background-size: cover;
-    background-position: center;
-    border: 1px solid #eee;
-}
-.item-name {
-    font-size: 17px;
-    font-weight: 900;
-}
-.item-desc {
-    color: #6b7280;
-    font-size: 13px;
-    margin-top: 5px;
-}
-.price {
-    font-weight: 900;
-    color: #111827;
-    margin-top: 5px;
-}
+.price { font-weight:900; color:#22c55e; }
 .bestseller {
-    display: inline-block;
-    color: #b45309;
-    background: #fff7ed;
-    border: 1px solid #fed7aa;
-    border-radius: 999px;
-    padding: 3px 8px;
-    font-size: 12px;
-    font-weight: 900;
+    display:inline-block; color:#ffcf33; font-size:12px; font-weight:900; margin-top:4px;
 }
-.cart-panel {
-    background: white;
-    border: 1px solid #f1e4d8;
-    border-radius: 28px;
-    padding: 20px;
-    box-shadow: 0 18px 40px rgba(17,24,39,.10);
-    position: sticky;
-    top: 90px;
+.cart-box {
+    background:linear-gradient(180deg, rgba(17,24,39,.97), rgba(31,16,44,.97));
+    color:white; border-radius:30px; padding:24px;
+    box-shadow:0 22px 55px rgba(0,0,0,.35);
+    border:1px solid rgba(255,122,0,.35);
+    position:sticky; top:20px;
 }
-.cart-line {
-    border-bottom: 1px solid #f3f4f6;
-    padding: 10px 0;
+.cart-item { border-bottom:1px solid rgba(255,255,255,.14); padding:12px 0; }
+.total { font-size:28px; font-weight:900; color:#22c55e; margin-top:12px; }
+.small-muted { color:#cbd5e1; font-size:13px; }
+.step {
+    background:rgba(255,255,255,.09);
+    border:1px solid rgba(255,255,255,.14);
+    border-radius:20px; padding:14px; margin-bottom:10px;
 }
-.qty-pill {
-    display: inline-block;
-    background: #fff7ed;
-    border: 1px solid #fed7aa;
-    border-radius: 999px;
-    padding: 4px 10px;
-    font-weight: 900;
-    color: #c2410c;
-}
-.bill-line {
-    display: flex;
-    justify-content: space-between;
-    margin: 7px 0;
-    color: #374151;
-}
-.bill-total {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 11px;
-    padding-top: 12px;
-    border-top: 1px solid #e5e7eb;
-    font-size: 20px;
-    font-weight: 900;
-}
-.tracker-step {
-    padding: 12px 14px;
-    border-radius: 16px;
-    background: #f9fafb;
-    border: 1px solid #e5e7eb;
-    margin-bottom: 8px;
-    font-weight: 800;
-}
-.tracker-step.active {
-    background: #ecfdf5;
-    border-color: #bbf7d0;
-    color: #047857;
-}
-.footer {
-    text-align: center;
-    color: #6b7280;
-    margin: 24px 0 10px;
-    padding: 18px;
-    background: #fff;
-    border: 1px solid #f1e4d8;
-    border-radius: 22px;
-}
-div[data-testid="stTextInput"] input,
-div[data-testid="stTextArea"] textarea,
-div[data-testid="stSelectbox"] div {
-    border-radius: 14px;
+.step-active { border-color:#22c55e; box-shadow:0 0 18px rgba(34,197,94,.20); }
+div[data-testid="stTextInput"] input, div[data-testid="stTextArea"] textarea, div[data-testid="stSelectbox"] div {
+    background:rgba(255,255,255,.96);
+    border-radius:16px; color:#111827;
 }
 .stButton > button {
-    border-radius: 14px;
-    border: 1px solid #fc8019;
-    background: #fc8019;
-    color: white;
-    font-weight: 900;
+    border-radius:16px; border:0; font-weight:900;
+    background:linear-gradient(90deg,#ff7a00,#ff3d00);
+    color:white; box-shadow:0 8px 22px rgba(255,122,0,.25);
 }
 .stButton > button:hover {
-    background: #e46d12;
-    color: white;
-    border: 1px solid #e46d12;
+    background:linear-gradient(90deg,#ff8a1f,#ff5a1f); color:white; border:0;
 }
-@media (max-width: 900px) {
-    .hero-title { font-size: 38px; }
-    .dx-nav { display: none; }
+.footer {
+    text-align:center; color:#cbd5e1; margin-top:28px; padding:22px;
+    border-radius:22px; background:rgba(255,255,255,.07);
+    border:1px solid rgba(255,255,255,.12);
 }
 </style>
-""",
-    unsafe_allow_html=True,
-)
+""", unsafe_allow_html=True)
 
-# ---------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------
-def all_items(restaurant):
+# -------------------------------------------------
+# Helper functions
+# -------------------------------------------------
+def add_to_cart(restaurant_name, item):
+    st.session_state.cart.append({
+        "restaurant": restaurant_name,
+        "name": item["name"],
+        "price": item["price"],
+        "image": item["image"],
+        "veg": item["veg"]
+    })
+
+def flatten_menu(r):
     items = []
-    for section_items in restaurant["menu"].values():
-        items.extend(section_items)
+    for cat_items in r["menu"].values():
+        items.extend(cat_items)
     return items
 
-
-def get_restaurant(restaurant_id):
-    return next((r for r in RESTAURANTS if r["id"] == restaurant_id), None)
-
-
-def get_item(item_id):
-    for restaurant in RESTAURANTS:
-        for item in all_items(restaurant):
-            if item["id"] == item_id:
-                return restaurant, item
-    return None, None
-
-
-def add_item(restaurant, item):
-    item_id = item["id"]
-    if item_id not in st.session_state.cart:
-        st.session_state.cart[item_id] = {
-            "qty": 0,
-            "restaurant_id": restaurant["id"],
-            "restaurant_name": restaurant["name"],
-            "name": item["name"],
-            "price": item["price"],
-            "veg": item["veg"],
-        }
-    st.session_state.cart[item_id]["qty"] += 1
-
-
-def decrease_item(item_id):
-    if item_id in st.session_state.cart:
-        st.session_state.cart[item_id]["qty"] -= 1
-        if st.session_state.cart[item_id]["qty"] <= 0:
-            del st.session_state.cart[item_id]
-
-
-def bill_amounts():
-    subtotal = sum(line["price"] * line["qty"] for line in st.session_state.cart.values())
-    delivery = 29 if subtotal else 0
-    platform = 5 if subtotal else 0
-    taxes = round(subtotal * 0.05) if subtotal else 0
-
+def calculate_bill():
+    subtotal = sum(i["price"] for i in st.session_state.cart)
+    delivery_fee = 29 if subtotal else 0
+    platform_fee = 5 if subtotal else 0
     discount = 0
-    coupon = st.session_state.applied_coupon
+    coupon = st.session_state.coupon.strip().upper()
+
     if coupon in COUPONS and subtotal:
         c = COUPONS[coupon]
-        if c["kind"] == "flat":
+        if c["type"] == "percent":
+            discount = min(round(subtotal * c["value"] / 100), c["max"])
+        elif c["type"] == "flat":
             discount = min(c["value"], subtotal)
-        elif c["kind"] == "percent":
-            discount = min(round(subtotal * c["value"] / 100), c["cap"])
-        elif c["kind"] == "delivery":
-            discount = min(delivery, c["value"])
+        elif c["type"] == "delivery":
+            discount = min(c["value"], delivery_fee)
 
-    total = max(subtotal + delivery + platform + taxes - discount, 0)
-    return subtotal, delivery, platform, taxes, discount, total
+    total = max(subtotal + delivery_fee + platform_fee - discount, 0)
+    return subtotal, delivery_fee, platform_fee, discount, total
 
-
-# ---------------------------------------------------------
-# Header and hero
-# ---------------------------------------------------------
-st.markdown(
-    """
-<div class="dx-header">
-    <div class="dx-logo"><div class="dx-logo-badge">D</div>Delta<span>X</span> Food</div>
-    <div class="dx-nav">
-        <span class="dx-nav-item">Search</span>
-        <span class="dx-nav-item">Offers</span>
-        <span class="dx-nav-item">Help</span>
-        <span class="dx-nav-item">Cart</span>
+# -------------------------------------------------
+# Top Navigation and Hero
+# -------------------------------------------------
+st.markdown("""
+<div class="top-nav">
+    <div class="brand">🍽️ Delta<span>X</span> Food</div>
+    <div class="nav-actions">
+        <div class="nav-pill">Fresh • Fast • Online</div>
     </div>
 </div>
 
 <div class="hero">
-    <div class="hero-chip">🔥 Food delivery demo website</div>
-    <div class="hero-title">Order food online<br>near you</div>
-    <div class="hero-subtitle">
-        Browse real food images, restaurants, categories, offers, coupons, cart, checkout and demo order tracking.
+    <span class="hero-badge">🔥 Swiggy-style food ordering demo</span>
+    <h1>Order Food Online<br>Near You</h1>
+    <p>Explore restaurants, real food images, cuisine categories, offers, menu sections, coupons, smart cart, checkout, and demo order tracking.</p>
+    <div class="hero-badges">
+        <div class="hero-badge">📍 Location Based</div>
+        <div class="hero-badge">🍕 Real Food Images</div>
+        <div class="hero-badge">🎁 Coupons</div>
+        <div class="hero-badge">🛒 Smart Cart</div>
+        <div class="hero-badge">🚚 Order Tracking</div>
     </div>
 </div>
-""",
-    unsafe_allow_html=True,
+""", unsafe_allow_html=True)
+
+# -------------------------------------------------
+# Search and Filters
+# -------------------------------------------------
+st.markdown('<div class="search-zone">', unsafe_allow_html=True)
+left, mid, right = st.columns([2, 2, 1])
+
+with left:
+    location = st.text_input("📍 Delivery location", placeholder="Enter area, city or pincode")
+
+with mid:
+    search = st.text_input("🔍 Search for restaurant or dish", placeholder="Biryani, Pizza, Burger, Dosa...")
+
+with right:
+    veg_only = st.toggle("Veg only")
+
+sort_by = st.radio(
+    "Sort by",
+    ["Recommended", "Rating", "Fast Delivery", "Low Price", "Nearest"],
+    horizontal=True
 )
+st.markdown('</div>', unsafe_allow_html=True)
 
-# ---------------------------------------------------------
-# Search panel
-# ---------------------------------------------------------
-st.markdown('<div class="search-panel">', unsafe_allow_html=True)
-c1, c2, c3 = st.columns([1.6, 2.2, 1.2])
-with c1:
-    location = st.text_input("📍 Delivery location", placeholder="Rajnagar Extension, Ghaziabad")
-with c2:
-    search = st.text_input("🔍 Search restaurant or food", placeholder="Search for biryani, pizza, burger, dosa...")
-with c3:
-    sort_by = st.selectbox("Sort", ["Recommended", "Fast Delivery", "Rating", "Low Price", "Nearest"])
-
-f1, f2, f3, f4 = st.columns(4)
-with f1:
-    veg_only = st.toggle("Pure Veg")
-with f2:
-    under_30 = st.toggle("Under 30 min")
-with f3:
-    top_rated = st.toggle("Ratings 4.3+")
-with f4:
-    offer_only = st.toggle("Offers")
-st.markdown("</div>", unsafe_allow_html=True)
-
-# ---------------------------------------------------------
-# Categories
-# ---------------------------------------------------------
-st.markdown('<div class="section-heading">What are you craving?</div>', unsafe_allow_html=True)
+# -------------------------------------------------
+# Category carousel style section
+# -------------------------------------------------
+st.markdown('<div class="section-title">What are you craving today?</div>', unsafe_allow_html=True)
 cat_cols = st.columns(4)
-for i, (cat_name, cat_image) in enumerate(CATEGORIES[:4]):
-    with cat_cols[i]:
-        st.markdown(
-            f"""
-<div class="category-tile">
-    <div class="category-img" style="background-image:url('{cat_image}')"></div>
-    <div class="category-name">{cat_name}</div>
-</div>
-""",
-            unsafe_allow_html=True,
-        )
-        if st.button(cat_name, key=f"cat_{cat_name}", use_container_width=True):
-            st.session_state.category_filter = cat_name
+for idx, cat in enumerate(categories[:4]):
+    with cat_cols[idx]:
+        st.markdown(f"""
+        <div class="category-card">
+            <div class="category-img" style="background-image:url('{cat['image']}')"></div>
+            <div class="category-name">{cat['name']}</div>
+        </div>
+        """, unsafe_allow_html=True)
+        if st.button(f"Search {cat['name']}", key=f"cat_{cat['name']}", use_container_width=True):
+            st.session_state.selected_category = cat["name"]
+            st.rerun()
 
 cat_cols2 = st.columns(4)
-for i, (cat_name, cat_image) in enumerate(CATEGORIES[4:]):
-    with cat_cols2[i]:
-        st.markdown(
-            f"""
-<div class="category-tile">
-    <div class="category-img" style="background-image:url('{cat_image}')"></div>
-    <div class="category-name">{cat_name}</div>
+for idx, cat in enumerate(categories[4:]):
+    with cat_cols2[idx]:
+        st.markdown(f"""
+        <div class="category-card">
+            <div class="category-img" style="background-image:url('{cat['image']}')"></div>
+            <div class="category-name">{cat['name']}</div>
+        </div>
+        """, unsafe_allow_html=True)
+        if st.button(f"Search {cat['name']}", key=f"cat2_{cat['name']}", use_container_width=True):
+            st.session_state.selected_category = cat["name"]
+            st.rerun()
+
+if st.session_state.selected_category:
+    st.info(f"Showing results for: {st.session_state.selected_category}")
+    if st.button("Clear category filter"):
+        st.session_state.selected_category = None
+        st.rerun()
+
+st.markdown("""
+<div class="offer-strip">
+    🎁 Available coupons: DELTAX50 = 50% OFF up to ₹100 • FREEDEL = Free delivery • NEWUSER = Flat ₹75 OFF
 </div>
-""",
-            unsafe_allow_html=True,
-        )
-        if st.button(cat_name, key=f"cat2_{cat_name}", use_container_width=True):
-            st.session_state.category_filter = cat_name
+""", unsafe_allow_html=True)
 
-if st.session_state.category_filter:
-    c_info, c_clear = st.columns([4, 1])
-    with c_info:
-        st.info(f"Category filter applied: {st.session_state.category_filter}")
-    with c_clear:
-        if st.button("Clear filter", use_container_width=True):
-            st.session_state.category_filter = ""
+# -------------------------------------------------
+# Filter restaurants
+# -------------------------------------------------
+filtered = restaurants.copy()
 
-st.markdown(
-    """
-<div class="offer-row">
-🎁 Try coupon codes: DELTAX50 | FREEDEL | NEWUSER | TASTY20
-</div>
-""",
-    unsafe_allow_html=True,
-)
-
-# ---------------------------------------------------------
-# Filtering
-# ---------------------------------------------------------
-query = (search or st.session_state.category_filter or "").lower().strip()
-filtered = RESTAURANTS.copy()
-
+query = search or st.session_state.selected_category or ""
 if query:
+    s = query.lower()
     filtered = [
-        r
-        for r in filtered
-        if query in r["name"].lower()
-        or query in r["cuisine"].lower()
-        or any(query in item["name"].lower() for item in all_items(r))
+        r for r in filtered
+        if s in r["name"].lower()
+        or s in r["cuisine"].lower()
+        or any(s in item["name"].lower() for item in flatten_menu(r))
     ]
 
 if veg_only:
-    filtered = [r for r in filtered if r["pure_veg"]]
-if under_30:
-    filtered = [r for r in filtered if r["eta_max"] <= 30]
-if top_rated:
-    filtered = [r for r in filtered if r["rating"] >= 4.3]
-if offer_only:
-    filtered = [r for r in filtered if bool(r["offer"])]
+    filtered = [r for r in filtered if r["veg"] or all(item["veg"] for item in flatten_menu(r))]
 
-if sort_by == "Fast Delivery":
-    filtered = sorted(filtered, key=lambda r: r["eta_min"])
-elif sort_by == "Rating":
+if sort_by == "Rating":
     filtered = sorted(filtered, key=lambda r: r["rating"], reverse=True)
+elif sort_by == "Fast Delivery":
+    filtered = sorted(filtered, key=lambda r: int(r["time"].split("-")[0]))
 elif sort_by == "Low Price":
     filtered = sorted(filtered, key=lambda r: r["price_for_two"])
 elif sort_by == "Nearest":
-    filtered = sorted(filtered, key=lambda r: r["distance"])
+    filtered = sorted(filtered, key=lambda r: float(r["distance"].split()[0]))
 else:
-    filtered = sorted(filtered, key=lambda r: (not r["promoted"], -r["rating"], r["eta_min"]))
+    filtered = sorted(filtered, key=lambda r: (not r["promoted"], -r["rating"]))
 
-# ---------------------------------------------------------
-# Main content and cart
-# ---------------------------------------------------------
-left_col, right_col = st.columns([2.25, 1])
+# -------------------------------------------------
+# Main Layout
+# -------------------------------------------------
+main, cart_col = st.columns([2.25, 1])
 
-with left_col:
-    st.markdown('<div class="section-heading">Restaurants near you</div>', unsafe_allow_html=True)
+with main:
+    st.markdown('<div class="section-title">Top restaurants near you</div>', unsafe_allow_html=True)
 
     if not filtered:
-        st.warning("No restaurants found. Try another search or remove filters.")
+        st.warning("No restaurants found. Try another search.")
+    else:
+        cols = st.columns(2)
+        for index, r in enumerate(filtered):
+            with cols[index % 2]:
+                promoted = '<div class="promoted">PROMOTED</div>' if r["promoted"] else ""
+                st.markdown(f"""
+                <div class="card">
+                    <div class="rest-img" style="background-image:url('{r['image']}')">
+                        {promoted}
+                        <div class="discount">{r['offer']}</div>
+                    </div>
+                    <div class="rest-body">
+                        <div class="restaurant-title">{r['name']}</div>
+                        <div class="meta">{r['cuisine']}</div>
+                        <div class="meta"><span class="rating">⭐ {r['rating']}</span> • {r['time']} • {r['distance']} • ₹{r['price_for_two']} for two</div>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
 
-    rest_cols = st.columns(2)
-    for idx, r in enumerate(filtered):
-        with rest_cols[idx % 2]:
-            promoted = '<div class="promoted">PROMOTED</div>' if r["promoted"] else ""
-            st.markdown(
-                f"""
-<div class="restaurant-card">
-    <div class="rest-img" style="background-image:url('{r['image']}')">
-        {promoted}
-        <div class="rest-offer">{r['offer']}</div>
-    </div>
-    <div class="rest-body">
-        <div class="rest-title">{r['name']}</div>
-        <div class="rest-meta">{r['cuisine']}</div>
-        <div class="rest-meta">
-            <span class="rating-pill">★ {r['rating']}</span>
-            &nbsp; {r['eta_min']}-{r['eta_max']} min • {r['distance']} km • ₹{r['price_for_two']} for two
-        </div>
-    </div>
-</div>
-""",
-                unsafe_allow_html=True,
-            )
-            if st.button("View Menu", key=f"view_{r['id']}", use_container_width=True):
-                st.session_state.selected_restaurant = r["id"]
+                if st.button("View Menu", key=f"view_{r['id']}", use_container_width=True):
+                    st.session_state.selected_restaurant = r["id"]
 
-    selected = get_restaurant(st.session_state.selected_restaurant)
+    selected = next((r for r in restaurants if r["id"] == st.session_state.selected_restaurant), None)
+
     if selected:
-        st.markdown('<div class="menu-panel">', unsafe_allow_html=True)
-        st.markdown(
-            f"""
-<div class="menu-top">
-    <h2 style="margin:0">{selected['name']}</h2>
-    <div style="color:#6b7280; margin-top:5px;">
-        {selected['cuisine']} • ★ {selected['rating']} ({selected['rating_count']}) • {selected['eta_min']}-{selected['eta_max']} min • {selected['distance']} km
-    </div>
-</div>
-""",
-            unsafe_allow_html=True,
-        )
+        st.markdown('<div class="menu-box">', unsafe_allow_html=True)
+        st.markdown(f"### {selected['name']}")
+        st.caption(f"{selected['cuisine']} • ⭐ {selected['rating']} • {selected['time']} • {selected['distance']}")
 
-        menu_search = st.text_input("Search in this menu", placeholder="Search dishes in selected restaurant")
-        menu_query = menu_search.lower().strip()
+        for menu_category, items in selected["menu"].items():
+            st.markdown(f"#### {menu_category}")
+            for item in items:
+                c1, c2, c3 = st.columns([1.1, 2.4, 1])
+                with c1:
+                    st.markdown(f"<div class='menu-img' style=\"background-image:url('{item['image']}')\"></div>", unsafe_allow_html=True)
+                with c2:
+                    veg_label = "🟢 Veg" if item["veg"] else "🔴 Non-Veg"
+                    best = "<span class='bestseller'>⭐ Bestseller</span>" if item["bestseller"] else ""
+                    st.markdown(f"""
+                    <div class="menu-card">
+                        <b>{item['name']}</b><br>
+                        <span class="small-muted">{veg_label}</span><br>
+                        {best}<br>
+                        <span class="price">₹{item['price']}</span>
+                    </div>
+                    """, unsafe_allow_html=True)
+                with c3:
+                    if st.button("Add", key=f"add_{selected['id']}_{menu_category}_{item['name']}", use_container_width=True):
+                        add_to_cart(selected["name"], item)
+                        st.success(f"Added {item['name']}")
+        st.markdown('</div>', unsafe_allow_html=True)
 
-        for section, items in selected["menu"].items():
-            section_items = [
-                item for item in items
-                if not menu_query or menu_query in item["name"].lower() or menu_query in item["desc"].lower()
-            ]
-            if not section_items:
-                continue
-
-            st.markdown(f'<div class="menu-category">{section}</div>', unsafe_allow_html=True)
-            for item in section_items:
-                m1, m2, m3 = st.columns([1.1, 2.6, 1])
-                with m1:
-                    st.markdown(
-                        f"""<div class="item-img" style="background-image:url('{item['image']}')"></div>""",
-                        unsafe_allow_html=True,
-                    )
-                with m2:
-                    veg_mark = "🟢 Veg" if item["veg"] else "🔴 Non-Veg"
-                    best = '<span class="bestseller">⭐ Bestseller</span>' if item["bestseller"] else ""
-                    st.markdown(
-                        f"""
-<div class="item-card">
-    <div class="item-name">{item['name']}</div>
-    <div>{veg_mark} &nbsp; ★ {item['rating']} &nbsp; {best}</div>
-    <div class="item-desc">{item['desc']}</div>
-    <div class="price">₹{item['price']}</div>
-</div>
-""",
-                        unsafe_allow_html=True,
-                    )
-                with m3:
-                    if st.button("ADD", key=f"add_{selected['id']}_{item['id']}", use_container_width=True):
-                        add_item(selected, item)
-                        st.toast(f"Added {item['name']}")
-        st.markdown("</div>", unsafe_allow_html=True)
-
-with right_col:
-    st.markdown('<div class="cart-panel">', unsafe_allow_html=True)
-    st.markdown("### 🛒 Cart")
+with cart_col:
+    st.markdown('<div class="cart-box">', unsafe_allow_html=True)
+    st.markdown("### 🛒 Your Cart")
 
     if not st.session_state.cart:
-        st.caption("Good food is always cooking. Add items to your cart.")
+        st.markdown('<p class="small-muted">Your cart is empty. Add items from any restaurant.</p>', unsafe_allow_html=True)
     else:
-        for item_id, line in list(st.session_state.cart.items()):
-            st.markdown(
-                f"""
-<div class="cart-line">
-    <b>{line['name']}</b><br>
-    <span style="color:#6b7280; font-size:13px;">{line['restaurant_name']}</span><br>
-    ₹{line['price']} × <span class="qty-pill">{line['qty']}</span>
-</div>
-""",
-                unsafe_allow_html=True,
-            )
-            q1, q2 = st.columns(2)
-            with q1:
-                if st.button("−", key=f"minus_{item_id}", use_container_width=True):
-                    decrease_item(item_id)
-                    st.rerun()
-            with q2:
-                restaurant, item = get_item(item_id)
-                if restaurant and item and st.button("+", key=f"plus_{item_id}", use_container_width=True):
-                    add_item(restaurant, item)
-                    st.rerun()
-
-        st.markdown("#### Coupon")
-        coupon_input = st.text_input("Enter coupon", value=st.session_state.coupon_code, placeholder="DELTAX50")
-        c1, c2 = st.columns(2)
-        with c1:
-            if st.button("Apply", use_container_width=True):
-                code = coupon_input.upper().strip()
-                st.session_state.coupon_code = code
-                if code in COUPONS:
-                    st.session_state.applied_coupon = code
-                    st.success(COUPONS[code]["label"])
-                else:
-                    st.session_state.applied_coupon = ""
-                    st.warning("Invalid coupon.")
-        with c2:
-            if st.button("Remove", use_container_width=True):
-                st.session_state.coupon_code = ""
-                st.session_state.applied_coupon = ""
+        for idx, item in enumerate(st.session_state.cart):
+            st.markdown(f"""
+            <div class="cart-item">
+                <b>{item['name']}</b><br>
+                <span class="small-muted">{item['restaurant']}</span><br>
+                ₹{item['price']}
+            </div>
+            """, unsafe_allow_html=True)
+            if st.button("Remove", key=f"remove_{idx}", use_container_width=True):
+                st.session_state.cart.pop(idx)
                 st.rerun()
 
-        subtotal, delivery, platform, taxes, discount, total = bill_amounts()
+        st.markdown("#### Apply Coupon")
+        coupon_input = st.text_input("Coupon code", value=st.session_state.coupon, placeholder="DELTAX50 / FREEDEL / NEWUSER")
+        if st.button("Apply Coupon", use_container_width=True):
+            st.session_state.coupon = coupon_input.strip().upper()
+            if st.session_state.coupon in COUPONS:
+                st.success(f"Coupon applied: {COUPONS[st.session_state.coupon]['label']}")
+            else:
+                st.warning("Invalid coupon code.")
 
-        st.markdown("#### Bill Details")
-        st.markdown(f'<div class="bill-line"><span>Item total</span><b>₹{subtotal}</b></div>', unsafe_allow_html=True)
-        st.markdown(f'<div class="bill-line"><span>Delivery fee</span><b>₹{delivery}</b></div>', unsafe_allow_html=True)
-        st.markdown(f'<div class="bill-line"><span>Platform fee</span><b>₹{platform}</b></div>', unsafe_allow_html=True)
-        st.markdown(f'<div class="bill-line"><span>Taxes</span><b>₹{taxes}</b></div>', unsafe_allow_html=True)
-        st.markdown(f'<div class="bill-line"><span>Discount</span><b>-₹{discount}</b></div>', unsafe_allow_html=True)
-        st.markdown(f'<div class="bill-total"><span>To pay</span><span>₹{total}</span></div>', unsafe_allow_html=True)
+        subtotal, delivery_fee, platform_fee, discount, total = calculate_bill()
+        st.markdown("---")
+        st.markdown(f"Subtotal: ₹{subtotal}")
+        st.markdown(f"Delivery fee: ₹{delivery_fee}")
+        st.markdown(f"Platform fee: ₹{platform_fee}")
+        st.markdown(f"Discount: -₹{discount}")
+        st.markdown(f'<div class="total">Total: ₹{total}</div>', unsafe_allow_html=True)
 
-        st.markdown("#### Delivery Details")
-        customer_name = st.text_input("Name")
-        phone = st.text_input("Mobile")
-        address = st.text_area("Address", value=location)
-        payment = st.selectbox("Payment", ["Cash on Delivery", "UPI Demo", "Card Demo", "Wallet Demo"])
+        st.markdown("#### Checkout")
+        name = st.text_input("Your name")
+        phone = st.text_input("Mobile number")
+        address = st.text_area("Delivery address", value=location if location else "")
+
+        payment = st.selectbox("Payment method", ["Cash on Delivery", "UPI Demo", "Card Demo"])
 
         if st.button("Place Demo Order", use_container_width=True):
-            if not customer_name or not phone or not address:
-                st.warning("Please fill name, mobile and address.")
+            if not name or not phone or not address:
+                st.warning("Please enter name, phone, and address.")
             else:
                 st.session_state.order_placed = True
-                st.session_state.last_order_id = "DX" + datetime.now().strftime("%H%M%S")
-                st.success(f"Order placed: {st.session_state.last_order_id}")
+                order_id = "DX" + datetime.now().strftime("%H%M%S")
+                st.success(f"Order placed successfully! Order ID: {order_id}")
                 st.balloons()
 
         if st.button("Clear Cart", use_container_width=True):
-            st.session_state.cart = {}
-            st.session_state.applied_coupon = ""
-            st.session_state.coupon_code = ""
+            st.session_state.cart = []
+            st.session_state.coupon = ""
             st.session_state.order_placed = False
-            st.session_state.last_order_id = ""
             st.rerun()
 
     if st.session_state.order_placed:
+        st.markdown("---")
         st.markdown("### 🚚 Order Tracking")
-        st.markdown('<div class="tracker-step active">✅ Order confirmed</div>', unsafe_allow_html=True)
-        st.markdown('<div class="tracker-step active">👨‍🍳 Food is being prepared</div>', unsafe_allow_html=True)
-        st.markdown('<div class="tracker-step">🛵 Delivery partner assigned</div>', unsafe_allow_html=True)
-        st.markdown('<div class="tracker-step">🏠 Delivered</div>', unsafe_allow_html=True)
+        st.markdown('<div class="step step-active">✅ Order Confirmed</div>', unsafe_allow_html=True)
+        st.markdown('<div class="step step-active">👨‍🍳 Food Being Prepared</div>', unsafe_allow_html=True)
+        st.markdown('<div class="step">🛵 Rider Assigned</div>', unsafe_allow_html=True)
+        st.markdown('<div class="step">🏠 Delivered</div>', unsafe_allow_html=True)
 
-    st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown('</div>', unsafe_allow_html=True)
 
-st.markdown(
-    """
+st.markdown("""
 <div class="footer">
-    © 2026 DeltaX Food. Original food-ordering demo website. Real payments and restaurant orders are not enabled.
+    © 2026 DeltaX Food. Original Swiggy-style demo website. Real payments and real restaurant orders are not enabled.
 </div>
-""",
-    unsafe_allow_html=True,
-)
+""", unsafe_allow_html=True)
